@@ -18,6 +18,20 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
        
+      - name: set up maven
+        uses: s4u/maven-install-action@v1.0.0
+        with:
+          maven-version: '3.9.5'
+          maven-opts: '-Xmx1024m -XX:MaxPermSize=512m -XX:+UseCompressedOops -XX:+UseParallelGC -XX:+UseStringDeduplication'
+          maven-home: ${{ github.workspace }}/maven
+          cache: true
+          cache-path: ${{ github.workspace }}/.m2
+          cache-key: maven-${{ hashFiles('**/pom.xml') }}
+          cache-version: 1.0.0
+      - name: Build with Maven
+        run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -s ${{ github.workspace }}/maven/settings.xml
+      - name: Run tests with Maven
+        run: mvn test -Dmaven.javadoc.skip=true -B -V -s ${{ github.workspace }}/maven/settings.xml
       
 
   
